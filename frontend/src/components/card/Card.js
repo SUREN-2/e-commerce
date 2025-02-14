@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../modal/Modal";
 import { useDispatch, useSelector } from "react-redux";
+import images from "../../utils/imageLoader";
 import {
   addToCart,
   decreaseCart,
@@ -23,7 +24,7 @@ function Card({ data }) {
   const handleAddToCart = (product) => {
     dispatch(addToCart(product));
   };
-  const Cart = cart.cartItems.find((cartItem) => cartItem.id === data.id);
+  const Cart = cart.cartItems.find((cartItem) => cartItem._id === data._id);
   return (
     <>
       {" "}
@@ -92,7 +93,7 @@ function Card({ data }) {
               />
             </span>
             <img
-              src={data.image}
+              src={images[data.image]}
               decoding="async"
               data-nimg="intrinsic"
               className="object-cover transition duration-150 ease-linear transform group-hover:scale-105"

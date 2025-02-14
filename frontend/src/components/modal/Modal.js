@@ -3,6 +3,7 @@ import { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addByIncrement, addToCart } from "../../store/reducers/cartSlice";
+import images from "../../utils/imageLoader";
 export default function Modal({ isOpen, closeModal, data }) {
   const [total, setTotal] = useState(1)
   const dispatch = useDispatch();
@@ -60,7 +61,7 @@ export default function Modal({ isOpen, closeModal, data }) {
                         <Link to={"/product/" + data.slug}>
                           <img
                             className=" w-full h-auto md:w-[420px] md:h-[420px] "
-                            src={data.image}
+                            src={images[data.image]}
                             alt={data.title}
                           />
                         </Link>

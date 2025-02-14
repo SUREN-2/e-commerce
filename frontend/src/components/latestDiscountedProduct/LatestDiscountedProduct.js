@@ -1,10 +1,26 @@
 import React from 'react'
 import { discountProducts } from '../../fakeData/Products'
+import { useState, useEffect } from "react";
 
 
 import Card from '../card/Card'
+import { getDiscountProduct,  } from '../../lib/api'
 
 function LatestDiscountedProduct() {
+  const [discountProducts, setDiscountProducts] = useState([]); // Initialize as an empty array
+
+  useEffect(() => {
+    async function fetchPopularProducts() {
+      try {
+        const data = await getDiscountProduct(); // Await the async function
+        setDiscountProducts(data); // Store the resolved data in state
+      } catch (error) {
+        console.error("Error fetching popular products:", error);
+      }
+    }
+
+    fetchPopularProducts();
+  }, []);
   return (
     <div
     id="discount"

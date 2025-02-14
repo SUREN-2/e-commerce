@@ -4,14 +4,22 @@ import { Formik, Field, Form } from "formik";
 import { useDispatch,useSelector } from "react-redux";
 import * as Yup from "yup";
 import { isLoginAction } from "../../store/reducers/isOpenSlice";
+import { API } from "../../lib/axios-client";
+import { setToken } from "../../store/reducers/authSlice";
+import { useNavigate } from "react-router-dom";
 const Login = ({ setIsOpenRegister }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   
   const {isOpen }= useSelector(state=>state.isOpen)
   const LoginSchema = Yup.object().shape({
     password: Yup.string().required("Password is required!"),
     email: Yup.string().email("Invalid email").required("Email is required!"),
   });
+
+
+
+  
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog
@@ -67,9 +75,43 @@ const Login = ({ setIsOpenRegister }) => {
                     password: "",
                     email: "",
                   }}
-                  onSubmit={async (values) => {
-                    await new Promise((r) => setTimeout(r, 500));
-                    alert(JSON.stringify(values, null, 2));
+                  onSubmit={async (values,{setSubmitting}) => {
+                    try {
+                      // const response = await axios.post(
+                      //   "https://your-api.com/auth/login", // Replace with your API
+                      //   values
+                      // );
+
+                      console.log(values)
+                      const response = await API.post('/auth/login',values)
+
+                      console.log(`login error ${response.data}`)
+
+                      console.log(`hell ${response}`)
+    
+                      // const { token, user } = response.data;
+    
+                      // Store token in localStorage
+                      // localStorage.setItem("token", token);
+                      // dispatch()
+                      dispatch(setToken(response.data.accessToken))
+    
+                      // Dispatch user data to Redux store
+                      // dispatch(setUser(user));
+    
+                      // Navigate to dashboard or home
+                      navigate("/dashboard");
+    
+                      // Close login modal
+                      dispatch(isLoginAction(false));
+                    } catch (error) {
+                      console.error("Login error:", error.response?.data || error);
+                      alert(error.response?.data?.message || "Login failed");
+                    } finally {
+                      setSubmitting(false);
+                    }
+                    // await new Promise((r) => setTimeout(r, 500));
+                    // alert(JSON.stringify(values, null, 2));
                   }}
                 >
                   {({ errors, touched, isValidating }) => (

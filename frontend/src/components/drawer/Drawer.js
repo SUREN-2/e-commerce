@@ -5,6 +5,7 @@ import "rsuite/dist/rsuite.min.css";
 import { useSelector, useDispatch } from "react-redux";
 import { shoppingCardAction } from "../../store/reducers/shoppingCardSlice";
 import { decreaseCart, getTotals, incrementCart, removeFromCart } from "../../store/reducers/cartSlice";
+import images from "../../utils/imageLoader";
 function DrawerCart() {
   const open = useSelector((state) => state.shoppingCard.value);
   const cart = useSelector((state) => state.cart);
@@ -112,7 +113,7 @@ function DrawerCart() {
                 >
                   <div className="relative flex rounded-full border border-gray-100 shadow-sm overflow-hidden flex-shrink-0 cursor-pointer mr-4">
                     <img
-                      src={data.image}
+                      src={images[data.image]}
                       width="40"
                       height="40"
                       alt={data.title}

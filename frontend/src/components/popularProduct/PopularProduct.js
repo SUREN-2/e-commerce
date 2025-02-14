@@ -1,10 +1,29 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { popularProducts } from "../../fakeData/Products";
 
 
 import Card from "../card/Card";
+import { getPopularProduct } from "../../lib/api";
+
+
 
 function PopularProduct() {
+  const [popularProduct, setPopularProducts] = useState([]); // Initialize as an empty array
+
+  useEffect(() => {
+    async function fetchPopularProducts() {
+      try {
+        const data = await getPopularProduct(); // Await the async function
+        console.log('skkk',data)
+        setPopularProducts(data); // Store the resolved data in state
+      } catch (error) {
+        console.error("Error fetching popular products:", error);
+      }
+    }
+
+    fetchPopularProducts();
+  }, []);
   return (
     <div
       id="discount"
@@ -25,8 +44,11 @@ function PopularProduct() {
       <div className="flex">
         <div className="w-full">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 2xl:grid-cols-6 gap-2 md:gap-3 lg:gap-3 ">
-            {popularProducts.map((data, index) => (
-              <Card key={index} data={data} />
+            {popularProduct.map((data, index) => (
+             
+              console.log('help',data),
+             
+              <Card key={data._id} data={data} />
             ))}
           </div>
         </div>

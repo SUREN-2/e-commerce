@@ -7,15 +7,26 @@ import { BrowserRouter } from "react-router-dom";
 import { Provider } from 'react-redux'
 import { store } from "./store/store";
 import { getTotals } from "./store/reducers/cartSlice";
+import { AuthProvider } from "./context/auth-provider";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-
 store.dispatch(getTotals());
+
+const queryClient = new QueryClient();  
 root.render(
   <React.StrictMode>
     <BrowserRouter>
     <Provider store={store}>
+    <QueryClientProvider client={queryClient}> 
+      <AuthProvider>
       <App />
+      </AuthProvider>
+    </QueryClientProvider>
+      
     </Provider>
       
     </BrowserRouter>
