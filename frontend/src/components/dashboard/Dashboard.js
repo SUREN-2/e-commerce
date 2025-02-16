@@ -1,10 +1,16 @@
 import React, { useEffect } from "react";
 import Table from "../table/Table";
+import { API } from "../../lib/axios-client";
+import { getUserOrders } from "../../lib/api";
 
 const Dashboard = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+
+  const response = getUserOrders()
+  console.log('orders',response)
   return (
     <div className="overlow-hidden">
       <h2 className="text-xl text-black font-semibold mb-5">Dashboard</h2>

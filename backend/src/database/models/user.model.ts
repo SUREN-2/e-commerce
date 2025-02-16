@@ -1,17 +1,31 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Schema, Types } from "mongoose";
 import { compareValue, hashValue } from "../../utils/bcrypt";
 
 
-interface Address {
+export interface Address {
+  user?: Types.ObjectId; // Link address to a user
   firstName: string;
   lastName: string;
   address?: string;
   city: string;
+  email: string;
   state: string;
   postalCode: string;
   country: string;
   phone: string;
 }
+
+
+// interface Address {
+//   firstName: string;
+//   lastName: string;
+//   address?: string;
+//   city: string;
+//   state: string;
+//   postalCode: string;
+//   country: string;
+//   phone: string;
+// }
 
 interface UserPreferences {
   enable2FA: boolean;
@@ -27,7 +41,7 @@ export interface UserDocument extends Document {
   role: "Customer" | "Admin" | "Vendor";
   orders: mongoose.Schema.Types.ObjectId[];
   profileImage?: string;
-  addresses: Address[];
+  addresses: Types.ObjectId[];
   wishlist: mongoose.Schema.Types.ObjectId[];
   cart: { product: mongoose.Schema.Types.ObjectId; quantity: number }[];
   createdAt: Date;
@@ -37,10 +51,12 @@ export interface UserDocument extends Document {
 }
 
 const addressSchema = new Schema<Address>({
+  user: { type: Schema.Types.ObjectId, ref: "User", required: true },
   firstName: { type: String, required: true },
   lastName: {type: String},
   address: { type: String },
   city: { type: String, required: true },
+  email: {type: String, required: true},
   state: { type: String, required: true },
   postalCode: { type: String, required: true },
   country: { type: String, required: true },
@@ -62,7 +78,7 @@ const userSchema = new Schema<UserDocument>(
     role: { type: String, enum: ["Customer", "Admin", "Vendor"], default: "Customer" },
     orders: { type: [mongoose.Schema.Types.ObjectId], ref: "Order", default: [] },
     profileImage: { type: String },
-    addresses: { type: [addressSchema], default: [] },
+    addresses: { type: [Types.ObjectId], ref: "Address", default: [] },
     wishlist: { type: [mongoose.Schema.Types.ObjectId], ref: "Product", default: [] },
     cart: [
       {
@@ -97,5 +113,7 @@ userSchema.set("toJSON", {
   },
 });
 
+const AddressModel = mongoose.model<Address>("Address", addressSchema);
 const UserModel = mongoose.model<UserDocument>("User", userSchema);
-export default UserModel;
+
+export { AddressModel, UserModel };

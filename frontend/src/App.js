@@ -25,6 +25,7 @@ import ChangePassword from "./components/changePassword/ChangePassword";
 import MyOrders from "./components/myOrders/MyOrders";
 import UpdateProfile from "./components/updateProfile/UpdateProfile";
 import Offers from "./pages/Offers";
+import Admin from "./components/admin/Admin";
 
 function App() {
   let [isOpenRegister, setIsOpenRegister] = useState(false);
@@ -43,6 +44,7 @@ function App() {
         <Route path="search" element={<Search />} />
         <Route path={"order/:id"} element={<Order />} />
         <Route path="offer" element={<Offers />} />
+        <Route path="admin" element={<Admin/>}/>
         <Route path="user" element={<User />}>
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="my-orders" element={<MyOrders />} />

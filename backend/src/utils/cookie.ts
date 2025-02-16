@@ -8,7 +8,7 @@ type CookiePayloadT = {
 
 };
 
-export const REFRESH_PATH = `${config.BASE_PATH}/auth/refresh`
+export const REFRESH_PATH = `${config.BASE_PATH}/auth/refreshToken`
 
 const defaults: CookieOptions = {
     httpOnly: true,
@@ -39,6 +39,8 @@ export const getRefreshTokenCookieOptions = (): CookieOptions => {
 
 export const setAuthenticationCookies = ({res,refreshToken}: CookiePayloadT): Response =>
     res.cookie("refreshToken", refreshToken, getRefreshTokenCookieOptions())
+
+
 
 
 export const clearAuthenticationCookies = (res: Response): Response => 

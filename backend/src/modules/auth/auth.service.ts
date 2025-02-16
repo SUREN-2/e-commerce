@@ -1,6 +1,6 @@
 import { config } from "../../config/app.config";
 import SessionModel from "../../database/models/session.model";
-import UserModel from "../../database/models/user.model";
+import {UserModel} from "../../database/models/user.model";
 import { ErrorCode } from "../../enums/error-code.enum";
 import { LoginDto, RegisterDto } from "../../interface/auth.interface";
 import { BadRequestException, UnauthorizedExecption } from "../../utils/catch-error";
@@ -56,7 +56,7 @@ export class AuthService{
             sessionId: session._id,
         });
 
-
+        console.log(`new :${accessToken}`)
 
         const refreshToken = signJwtToken({
                 sessionId: session._id,
@@ -73,9 +73,13 @@ export class AuthService{
             secret : refreshTokenSignOptions.secret
         })
 
+        console.log('auth service refresh,',payload)
+
         if(!payload){
             throw new UnauthorizedExecption("Invalid Refresh token")
         }
+
+        
 
         const session = await SessionModel.findById(payload.sessionId)
         const now = Date.now()

@@ -4,6 +4,7 @@ import { SessionDocument } from "../database/models/session.model";
 import { config } from "../config/app.config";
 
 
+
 export type AccessTPayload = {
   userId: UserDocument["_id"];
   sessionId: SessionDocument["_id"];
@@ -23,38 +24,44 @@ const defaults: SignOptions = {
 };
 
 export const accessTokenSignOptions: SignOptsAndSecret = {
-  expiresIn: parseInt(config.JWT.EXPIRES_IN) || "15m" ,
+  expiresIn: "15m",
   secret: config.JWT.SECRET,
 };
 
 export const refreshTokenSignOptions: SignOptsAndSecret = {
-  expiresIn: parseInt(config.JWT.REFRESH_EXPIRES_IN) || "30d",
+  expiresIn: "30d",
   secret: config.JWT.REFRESH_SECRET,
 };
-
 export const signJwtToken = (
   payload: AccessTPayload | RefreshTPayload,
   options?: SignOptsAndSecret
 ) => {
   const { secret, ...opts } = options || accessTokenSignOptions;
+
+  
+ 
   return jwt.sign(payload, secret, {
     ...defaults,
     ...opts,
   });
 };
 
+
 export const verifyJwtToken = <TPayload extends object = AccessTPayload>(
   token: string,
-  options?: VerifyOptions & { secret: string }
+  options?: VerifyOptions & { secret?: string }
 ) => {
   try {
-    const { secret = config.JWT.SECRET, ...opts } = options || {};
+    const secret = options?.secret || config.JWT.SECRET;
+    
     const payload = jwt.verify(token, secret, {
       ...defaults,
-      ...opts,
+      ...options,
     }) as TPayload;
+    
     return { payload };
   } catch (err: any) {
+   
     return {
       error: err.message,
     };

@@ -1,7 +1,7 @@
 import { config } from "../../config/app.config";
 import ProductModel from "../../database/models/product.model";
 import SessionModel from "../../database/models/session.model";
-import UserModel from "../../database/models/user.model";
+import {UserModel} from "../../database/models/user.model";
 import { ErrorCode } from "../../enums/error-code.enum";
 import { LoginDto, RegisterDto } from "../../interface/auth.interface";
 import { ProductDto } from "../../interface/product.interface";

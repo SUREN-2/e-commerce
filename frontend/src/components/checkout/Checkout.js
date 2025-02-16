@@ -3,8 +3,12 @@ import React, { useEffect } from "react";
 import OrderSummary from "../orderSummary/OrderSummary";
 import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector,useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { API } from "../../lib/axios-client";
+
 import randomId from "random-id";
+import { clearCart } from "../../store/reducers/cartSlice";
 
 const SignupSchema = Yup.object().shape({
   firstName: Yup.string().required("First Name is required!"),
@@ -12,11 +16,11 @@ const SignupSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email")
     .required("Email address is required!"),
-  phoneNumber: Yup.string().required("Phone number is required!"),
-  streetAddress: Yup.string().required("Street address is required!"),
+  phone: Yup.string().required("Phone number is required!"),
+  address: Yup.string().required("Street address is required!"),
   city: Yup.string().required("City is required!"),
   country: Yup.string().required("Country is required!"),
-  zipPostal: Yup.string().required("ZIP / Postal is required"),
+  postalCode: Yup.string().required("ZIP / Postal is required"),
   shippingOption: Yup.string().required("Shipping Option is required!"),
   paymentMethod: Yup.string().required("Payment Method is required"),
 });
@@ -25,12 +29,18 @@ function Checkout() {
     window.scrollTo(0, 0);
   }, []);
   let navigate = useNavigate();
-  var Id = randomId(30,"aA0");
+  var Id = randomId(30, "aA0");
   var Invoice = randomId(5, "0");
 
   const { ...item } = useSelector((state) => state.cart);
-    const dispatch = useDispatch();
-  const onchangeSubmit = (value) => {
+  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
+
+  const cachedUsers = queryClient.getQueryData(["authUser"]);
+  console.log('t',queryClient.getQueryCache());
+
+  console.log(`query data`,cachedUsers)
+  const onchangeSubmit = async(value) => {
     const data = {
       createdDate: new Date(),
       updatedDate: new Date(),
@@ -40,11 +50,69 @@ function Checkout() {
       ...value,
     };
 
+    const orderData = {
+      user: cachedUsers._id, // Replace with logged-in user ID
+      items: item.cartItems.map((item) => ({
+        product: item._id,
+        quantity: item.cartQuantity,
+        price: item.price,
+        discount: item.discount || 0,
+        total: item.price * item.cartQuantity
+      })),
+      totalAmount : item.cartTotalAmount,
+      discount: 0,
+      finalAmount : item.cartTotalAmount,
+      status: "Pending",
+      paymentMethod: value.paymentMethod,
+      shippingOption: value.shippingOption,
+      address: {
+        firstName: value.firstName,
+        lastName: value.lastName,
+        email: value.email,
+        address: value.address,
+        city: value.city,
+        state: "N/A",
+        postalCode: value.postalCode,
+        country: value.country,
+        phone: value.phone,
+      },
+      // orderedAt: currentDate,
+      // updatedAt: currentDate,
+    };
+    try {
+      // const response = await axios.post(
+      //   "https://your-api.com/auth/login", // Replace with your API
+      //   values
+      // );
+      console.log(`suren`,orderData)
+      console.log(`ffj`,item)
+
+      console.log('sss: ',data)
+      const response = await API.post('/order/create', orderData)
+
+      console.log(`checkout hi`)
+
+      console.log(`hell ${cachedUsers._id}`)
+
+      
+      dispatch(clearCart())
+
+      
+      // navigate("/orders");
+
+      // Close login modal
+      // dispatch(isLoginAction(false));
+    } catch (error) {
+      console.error("checkout error:", error.response?.data || error);
+      alert(error.response?.data?.message || "error checkout");
+    }
+
+
     localStorage.setItem(Id, JSON.stringify(data));
     setTimeout(() => {
       navigate("/order/" + Id);
-     
-    }, 2000);
+
+    }, 1000);
   };
 
   return (
@@ -53,19 +121,19 @@ function Checkout() {
         <div className="py-10 lg:py-12 px-0 2xl:max-w-screen-2xl w-full xl:max-w-screen-xl flex flex-col md:flex-row lg:flex-row">
           <div className="md:w-full lg:w-3/5 flex h-full flex-col order-2 sm:order-1 lg:order-1">
             <div className="mt-5 md:mt-0 md:col-span-2">
-              
+
               <Formik
                 initialValues={{
-                  firstName: "samet",
-                  lastName: "kaya",
-                  email: "kaya67380@gmail.com",
-                  phoneNumber: "1235",
-                  streetAddress: "kadıköy",
-                  city: "istanbul",
-                  country: "kadıköy",
-                  zipPostal: "3400",
-                  shippingOption: "FedEx",
-                  paymentMethod: "COD",
+                  firstName: "",
+                  lastName: "",
+                  email: "",
+                  phone: "",
+                  address: "",
+                  city: "",
+                  country: "",
+                  postalCode: "",
+                  shippingOption: "",
+                  paymentMethod: "",
                 }}
                 validationSchema={SignupSchema}
                 onSubmit={async (values) => {
@@ -146,7 +214,7 @@ function Checkout() {
 
                           <div className="col-span-6 sm:col-span-3">
                             <label
-                              htmlFor="phoneNumber"
+                              htmlFor="phone"
                               className="block text-gray-500 font-medium text-sm leading-none mb-2"
                             >
                               Phone Number
@@ -154,14 +222,14 @@ function Checkout() {
                             <div className="relative">
                               <Field
                                 className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg:white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
-                                id="phoneNumber"
-                                name="phoneNumber"
+                                id="phone"
+                                name="phone"
                                 placeholder="+90-1234567891"
                               />
                             </div>
-                            {errors.phoneNumber && touched.phoneNumber && (
+                            {errors.phone && touched.phone && (
                               <span className="text-red-400 text-sm mt-2">
-                                {errors.phoneNumber}
+                                {errors.phone}
                               </span>
                             )}
                           </div>
@@ -174,7 +242,7 @@ function Checkout() {
                         <div className="grid grid-cols-6 gap-6 mb-8">
                           <div className="col-span-6 ">
                             <label
-                              htmlFor="streetAddress"
+                              htmlFor="address"
                               className="block text-gray-500 font-medium text-sm leading-none mb-2"
                             >
                               Street Address
@@ -182,14 +250,14 @@ function Checkout() {
                             <div className="relative">
                               <Field
                                 className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg:white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
-                                id="streetAddress"
-                                name="streetAddress"
+                                id="address"
+                                name="address"
                                 placeholder="ümraniye sondurak No:3 Daire:70 Ümraniye/İstanbul"
                               />
                             </div>
-                            {errors.streetAddress && touched.streetAddress && (
+                            {errors.address && touched.address && (
                               <span className="text-red-400 text-sm mt-2">
-                                {errors.streetAddress}
+                                {errors.address}
                               </span>
                             )}
                           </div>
@@ -237,7 +305,7 @@ function Checkout() {
                           </div>
                           <div className="col-span-6 sm:col-span-6 lg:col-span-2">
                             <label
-                              htmlFor="zipPostal"
+                              htmlFor="postalCode"
                               className="block text-gray-500 font-medium text-sm leading-none mb-2"
                             >
                               ZIP / Postal
@@ -245,14 +313,14 @@ function Checkout() {
                             <div className="relative">
                               <Field
                                 className="py-2 px-4 md:px-5 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg:white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
-                                id="zipPostal"
-                                name="zipPostal"
+                                id="postalCode"
+                                name="postalCode"
                                 placeholder="34000"
                               />
                             </div>
-                            {errors.zipPostal && touched.zipPostal && (
+                            {errors.postalCode && touched.postalCode && (
                               <span className="text-red-400 text-sm mt-2">
-                                {errors.zipPostal}
+                                {errors.postalCode}
                               </span>
                             )}
                           </div>

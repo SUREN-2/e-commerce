@@ -60,10 +60,9 @@ export const AuthProvider = ({ children }) => {
                 console.log(` Eroor @ ${error}`)
 
                 if (error.response.status == "403" && error.response.data.message == "UnAuthorized") {
-
-
+                    console.log('refresh')
                     try {
-                        const response = await API.get("/refreshToken")
+                        const response = await API.get("auth/refreshToken")
                         dispatch(setToken(response.data.accessToken))
 
                         originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`
@@ -94,7 +93,6 @@ export const AuthProvider = ({ children }) => {
       const user = authData?.user;
     
       console.log(`new ${authData}`)
-
 
     return (
          <AuthContext.Provider value={{ user, error, isLoading, isFetching, refetch }}>{children}</AuthContext.Provider>

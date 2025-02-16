@@ -33,20 +33,27 @@ export class AuthController {
         body
       );
 
-      return setAuthenticationCookies({
-        res, refreshToken
-      }).status(HTTPSTATUS.OK).json({
-        message: "User login Successfull",
-        user: user,
-        accessToken: accessToken
+      console.log(`kk`,refreshToken)
 
-      })
+      
+
+      const response = setAuthenticationCookies({ res, refreshToken });
+
+      console.log("Response Headers after setting cookie:", response.getHeaders());
+  
+      return response.status(HTTPSTATUS.OK).json({
+        message: "User login Successful",
+        user: user,
+        cookies: req.cookies, // This will only log request cookies, not newly set ones
+        accessToken: accessToken,
+      });
       
     }
   );
 
   public refreshToken = aysncHandler(
     async (req: Request , res: Response) : Promise<any> => {
+      console.log('refresh cookie',req.cookies)
 
       const refreshToken = req.cookies.refreshToken as string |undefined;
 

@@ -17,6 +17,11 @@ import { configurePassport } from "./config/passport";
 import  authenticateJWT  from "./middlewares/auth";
 import productRoutes from "./modules/products/product.routes";
 
+import { isAuthenticated } from "./middlewares/isAuthenticated";
+import { isAdmin } from "./middlewares/isAdmin";
+import { signJwtToken, verifyJwtToken } from "./utils/jwt";
+import orderRoutes from "./modules/orders/order.routes";
+
 const app = express();
 const BASE_PATH = config.BASE_PATH;
 
@@ -35,24 +40,24 @@ app.use(
     })
   );
 app.options("*", cors());
-// app.use(passport.initialize());
-app.use(passport.initialize());
 
-// Configure Passport
-configurePassport(passport);
 
-// ✅ Public Route
 app.get(
   "/",
   aysncHandler(async (req, res) => {
     res.status(HTTPSTATUS.OK).json({ message: "Hello Kata bazar" });
   })
 );
+app.use(`${BASE_PATH}/protected`, isAuthenticated, (req, res) => {
+  res.json({ message: "You have access to this protected route!", user: (req as any).user });
+});
 
 // ✅ Authentication Routes
 app.use(`${BASE_PATH}/auth`, authRoutes);
 
-app.use(`${BASE_PATH}/user`, userRoutes);
+app.use(`${BASE_PATH}/user`,isAuthenticated, isAdmin, userRoutes);
+
+app.use(`${BASE_PATH}/order`,isAuthenticated, orderRoutes);
 
 app.use(`${BASE_PATH}/product`, productRoutes)
 
