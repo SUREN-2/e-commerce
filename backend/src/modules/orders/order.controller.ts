@@ -23,6 +23,8 @@ export class OrderController {
   public getUserOrderController = aysncHandler(
       async(req: Request,res: Response): Promise<any> => {
         const users = (req as any).user;
+
+        console.log('user called')
         
           const data = await this.orderService.getUserOrders(users.payload.userId)
       return res.status(HTTPSTATUS.ACCEPTED).json({

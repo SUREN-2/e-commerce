@@ -11,6 +11,20 @@ import { accessTokenSignOptions, refreshTokenSignOptions, RefreshTPayload, signJ
 
 export class ProductService{
 
+
+    public async deleteProduct(title : string){
+
+      const pro = await ProductModel.findOne({title})
+
+        if(!pro){
+            throw new BadRequestException("Product not found",ErrorCode.AUTH_USER_NOT_FOUND)
+        }
+
+       const deletedProduct =  await ProductModel.findOneAndDelete({ title });
+
+       return deletedProduct
+      
+    }
     public async getAllProductService(){
         const products = await ProductModel.find({})
         return products

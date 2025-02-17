@@ -1,11 +1,18 @@
 import { useQuery,useQueryClient } from "@tanstack/react-query";
 import {getCurrentUserQueryFn} from "../../lib/api";
-import { useEffect } from "react";
+import { useContext, useEffect,useDebugValue } from "react";
+import { useAuthContext } from "../../context/auth-provider";
+import AuthContext from "../../context/auth-provider";
 
 const useAuth = () => {
   const queryClient = useQueryClient();
   
   console.log("QueryClient:", queryClient);
+  // const {auth} = useContext(AuthContext)
+
+  // useDebugValue(auth, auth => auth?.user ? "Logged In" : "Logged Out")
+  // return useContext(AuthContext);
+  
   const query = useQuery({
     queryKey: ["authUser"],
     queryFn: async () => {
@@ -28,11 +35,12 @@ const useAuth = () => {
   });
 
 
+  return query
   // useEffect(() => {
   //   if (query.data) console.log("🟢 Data updated:", query.data);
   //   if (query.error) console.log("🔴 Error:", query.error);
   // }, [query.data, query.error]);
-  return query;
+  
 };
 
 export default useAuth;

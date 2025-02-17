@@ -10,13 +10,7 @@ const badgeColors = {
   "Confirmed": "info"
 };
 
-const statusOptions = {
-  "Delivered": [],
-  "Out of Delivery": ["Delivered"],
-  "Shipped": [ "Shipped","Delivered"],
-  "Pending": ["Pending","Confirmed","Shipped","Delivered"],
-  "Confirmed": ["Confirmed","Shipped", "Delivered"]
-};
+
 
 const OrderRow = ({ data, apiUrl }) => {
   const [showOrderModal, setShowOrderModal] = useState(false);
@@ -27,41 +21,41 @@ const OrderRow = ({ data, apiUrl }) => {
   const [loading, setLoading] = useState(false);
 
   // Open confirmation modal
-  const handleStatusChange = (event) => {
-    setSelectedId(event.target.id)
-    setSelectedStatus(event.target.value);
-    setShowConfirmModal(true);
-  };
+//   const handleStatusChange = (event) => {
+//     setSelectedId(event.target.id)
+//     setSelectedStatus(event.target.value);
+//     setShowConfirmModal(true);
+//   };
 
   // Confirm status change and call API
-  const confirmStatusChange = async () => {
-    setLoading(true);
-    try {
-      const response = await API.post('/admin/updateStatus', {
-        orderId: selectedId,
-        orderStatus: selectedStatus
-      });
+//   const confirmStatusChange = async () => {
+//     setLoading(true);
+//     try {
+//       const response = await API.post('/admin/updateStatus', {
+//         orderId: selectedId,
+//         orderStatus: selectedStatus
+//       });
 
-      if (response.status !== 202) {
-        throw new Error("Failed to update status");
-      }
+//       if (response.status !== 202) {
+//         throw new Error("Failed to update status");
+//       }
 
-      // Successfully updated status
-      setStatus(selectedStatus);
-      setShowConfirmModal(false);
-    } catch (error) {
-      console.error("Error updating status:", error);
-      alert("Failed to update order status. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+//       // Successfully updated status
+//       setStatus(selectedStatus);
+//       setShowConfirmModal(false);
+//     } catch (error) {
+//       console.error("Error updating status:", error);
+//       alert("Failed to update order status. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
 
   return (
     <>
       {/* Order Row */}
       <tr>
-      <td>{`${data.address.firstName} ${data.address.lastName}`}</td>
+      
       <td 
           onClick={() => setShowOrderModal(true)} 
           style={{ cursor: "pointer", color: "blue" }}
@@ -77,21 +71,6 @@ const OrderRow = ({ data, apiUrl }) => {
             {data.status}
           </span>
         </td>
-        <td>
-          <select 
-            className="form-select form-select-sm edit-option"
-            id={data._id}
-            value={status}
-            onChange={handleStatusChange} // Opens confirmation modal
-          >
-            <option value="0" disabled>Edit</option>
-            {statusOptions[data.status]?.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-        </td> 
         
  
       </tr>
@@ -102,7 +81,7 @@ const OrderRow = ({ data, apiUrl }) => {
           <Modal.Title>Order Details</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p><strong>Customer Name:</strong> {`${data.address.firstName} ${data.address.lastName}`}</p>
+         
           <p><strong>Order ID:</strong> {data._id}</p>
           <p><strong>Order Date:</strong> {new Date(new Date(data.createdAt)).toISOString().slice(0, 10)}</p>
           <p><strong>Delivery Date:</strong> { new Date(new Date(data.createdAt).setDate(new Date(data.createdAt).getDate() + 3)).toISOString().slice(0, 10)}</p>
@@ -118,7 +97,7 @@ const OrderRow = ({ data, apiUrl }) => {
       </Modal>
 
       {/* Confirm Status Change Modal */}
-      <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} centered>
+      {/* <Modal show={showConfirmModal} onHide={() => setShowConfirmModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>Confirm Status Change</Modal.Title>
         </Modal.Header>
@@ -134,7 +113,7 @@ const OrderRow = ({ data, apiUrl }) => {
             {loading ? "Updating..." : "Confirm"}
           </Button>
         </Modal.Footer>
-      </Modal>
+      </Modal> */}
     </>
   );
 };

@@ -33,13 +33,13 @@ export class AuthController {
         body
       );
 
-      console.log(`kk`,refreshToken)
+      // console.log(`kk`,refreshToken)
 
       
 
       const response = setAuthenticationCookies({ res, refreshToken });
 
-      console.log("Response Headers after setting cookie:", response.getHeaders());
+      // console.log("Response Headers after setting cookie:", response.getHeaders());
   
       return response.status(HTTPSTATUS.OK).json({
         message: "User login Successful",

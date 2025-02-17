@@ -21,11 +21,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
     <Provider store={store}>
-    <QueryClientProvider client={queryClient}> 
-      <AuthProvider>
+     <QueryClientProvider client={queryClient}>
+      <AuthProvider> 
       <App />
-      </AuthProvider>
-    </QueryClientProvider>
+       </AuthProvider>
+    </QueryClientProvider> 
       
     </Provider>
       

@@ -3,12 +3,13 @@ import { Dialog, Transition } from "@headlessui/react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 import { useDispatch } from "react-redux";
+import { API } from "../../lib/axios-client";
 import { isLoginAction } from "../../store/reducers/isOpenSlice";
 const Register = ({ isOpen, setIsOpenRegister }) => {
 
   const dispatch = useDispatch();
   const SignupSchema = Yup.object().shape({
-    fullName: Yup.string().required("Name is required!"),
+    name: Yup.string().required("Name is required!"),
     password: Yup.string().required("Password is required!"),
     email: Yup.string().email("Invalid email").required("Email is required!"),
   });
@@ -35,7 +36,7 @@ const Register = ({ isOpen, setIsOpenRegister }) => {
             className="inline-block h-screen align-middle"
             aria-hidden="true"
           >
-            ​
+
           </span>
           <Transition.Child
             as={Fragment}
@@ -64,13 +65,53 @@ const Register = ({ isOpen, setIsOpenRegister }) => {
                 <Formik
                   validationSchema={SignupSchema}
                   initialValues={{
-                    fullName: "",
+                    name: "",
                     password: "",
                     email: "",
                   }}
-                  onSubmit={async (values) => {
-                    await new Promise((r) => setTimeout(r, 500));
-                    alert(JSON.stringify(values, null, 2));
+                  onSubmit={async (values, { setSubmitting }) => {
+                    try {
+                      // const response = await axios.post(
+                      //   "https://your-api.com/auth/login", // Replace with your API
+                      //   values
+                      // );
+
+                      console.log(values)
+                      const response = await API.post('/auth/register', values)
+
+                      setIsOpenRegister(false)
+
+                      dispatch(isLoginAction(true))
+
+                      
+
+                      // console.log(`login error ${response.data}`)
+
+                      // console.log(`hell ${response}`)
+
+                      // const { token, user } = response.data;
+
+                      // Store token in localStorage
+                      // localStorage.setItem("token", token);
+                      // dispatch()
+                      // dispatch(setToken(response.data.accessToken))
+
+                      // Dispatch user data to Redux store
+                      // dispatch(setUser(user));
+
+                      // Navigate to dashboard or home
+                      // navigate("/dashboard");
+
+                      // Close login modal
+                      // dispatch(isLoginAction(false));
+                    } catch (error) {
+                      console.error("Login error:", error.response?.data || error);
+                      alert(error.response?.data?.message || "Login failed");
+                    } finally {
+                      setSubmitting(false);
+                    }
+                    // await new Promise((r) => setTimeout(r, 500));
+                    // alert(JSON.stringify(values, null, 2));
                   }}
                 >
                   {({ errors, touched, isValidating }) => (
@@ -105,15 +146,15 @@ const Register = ({ isOpen, setIsOpenRegister }) => {
 
                             <Field
                               className="py-2 pl-10 w-full appearance-none border text-sm opacity-75 text-input rounded-md placeholder-body min-h-12 transition duration-200 focus:ring-0 ease-in-out bg-white border-gray-200 focus:outline-none focus:border-emerald-500 h-11 md:h-12"
-                              id="fullName"
-                              name="fullName"
+                              id="name"
+                              name="name"
                               placeholder="Full Name"
                               type="text"
                             />
                           </div>
-                          {errors.fullName&&errors.fullName && (
+                          {errors.name && errors.name && (
                             <span className="text-red-400 text-sm mt-2">
-                              {errors.fullName}
+                              {errors.name}
                             </span>
                           )}
                         </div>
@@ -151,7 +192,7 @@ const Register = ({ isOpen, setIsOpenRegister }) => {
                               type="email"
                             />
                           </div>
-                          {errors.email && touched.email&&(
+                          {errors.email && touched.email && (
                             <span className="text-red-400 text-sm mt-2">
                               {errors.email}
                             </span>
@@ -198,7 +239,7 @@ const Register = ({ isOpen, setIsOpenRegister }) => {
                               type="password"
                             />
                           </div>
-                          {errors.password && touched.password&&(
+                          {errors.password && touched.password && (
                             <span className="text-red-400 text-sm mt-2">
                               {errors.password}
                             </span>

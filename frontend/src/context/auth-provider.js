@@ -17,6 +17,9 @@ export const AuthProvider = ({ children }) => {
 
     const dispatch = useDispatch();
     const token = useSelector((state) => state.auth.token);
+
+
+    // const [auth,setAuth] = useState({})
     
 
     // useEffect(() => {
@@ -95,7 +98,7 @@ export const AuthProvider = ({ children }) => {
       console.log(`new ${authData}`)
 
     return (
-         <AuthContext.Provider value={{ user, error, isLoading, isFetching, refetch }}>{children}</AuthContext.Provider>
+         <AuthContext.Provider value={{user,error,isLoading,isFetching,refetch}}>{children}</AuthContext.Provider>
     );
 }
 
@@ -106,5 +109,7 @@ export const useAuthContext = () => {
     }
     return context;
   };
+
+export default AuthContext;
 
 

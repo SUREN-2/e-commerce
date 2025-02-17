@@ -21,6 +21,7 @@ import { isAuthenticated } from "./middlewares/isAuthenticated";
 import { isAdmin } from "./middlewares/isAdmin";
 import { signJwtToken, verifyJwtToken } from "./utils/jwt";
 import orderRoutes from "./modules/orders/order.routes";
+import adminRoutes from "./modules/admin/admin.routes";
 
 const app = express();
 const BASE_PATH = config.BASE_PATH;
@@ -59,7 +60,11 @@ app.use(`${BASE_PATH}/user`,isAuthenticated, isAdmin, userRoutes);
 
 app.use(`${BASE_PATH}/order`,isAuthenticated, orderRoutes);
 
-app.use(`${BASE_PATH}/product`, productRoutes)
+
+app.use(`${BASE_PATH}/admin`,isAuthenticated, isAdmin, adminRoutes);
+
+
+app.use(`${BASE_PATH}/product`, isAuthenticated,productRoutes)
 
 
 app.use(errorHandler);

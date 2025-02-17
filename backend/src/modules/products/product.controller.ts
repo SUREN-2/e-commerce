@@ -13,6 +13,17 @@ export class ProductController{
         this.productService = productService
     }
 
+    public deleteProductController = aysncHandler(
+        async(req: Request,res: Response): Promise<any> => {
+            const {title} = req.body
+            const data = await this.productService.deleteProduct(title)
+        return res.status(HTTPSTATUS.ACCEPTED).json({
+                message : "Product deleted Successfully",
+                
+        })
+        } 
+    )
+
     public getAllProductsController = aysncHandler(
         async(req: Request,res: Response): Promise<any> => {
             const data = await this.productService.getAllProductService()

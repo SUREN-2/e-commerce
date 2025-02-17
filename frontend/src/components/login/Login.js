@@ -5,11 +5,14 @@ import { useDispatch,useSelector } from "react-redux";
 import * as Yup from "yup";
 import { isLoginAction } from "../../store/reducers/isOpenSlice";
 import { API } from "../../lib/axios-client";
-import { setToken } from "../../store/reducers/authSlice";
+import { setToken,setUser,setIsAuthenticated} from "../../store/reducers/authSlice";
 import { useNavigate } from "react-router-dom";
+import useAuth from "../../hooks/api/use-auth";
 const Login = ({ setIsOpenRegister }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate()
+
+  const {setAuth} = useAuth()
   
   const {isOpen }= useSelector(state=>state.isOpen)
   const LoginSchema = Yup.object().shape({
@@ -77,30 +80,31 @@ const Login = ({ setIsOpenRegister }) => {
                   }}
                   onSubmit={async (values,{setSubmitting}) => {
                     try {
-                      // const response = await axios.post(
-                      //   "https://your-api.com/auth/login", // Replace with your API
-                      //   values
-                      // );
+                     
 
-                      console.log(values)
+                      // console.log(values)
                       const response = await API.post('/auth/login',values)
 
-                      console.log(`login error ${response.data}`)
 
-                      console.log(`hell ${response}`)
+                      console.log('From login',response)
+                      console.log('ACCESS....',response.data.accessToken)
+                      console.log('ROLE........',response.data.user.role)
+
+                    
+                      const roles = response.data.user.role
+                      const accessToken = response.data.accessToken
+                      const user = response.data.user._id
     
-                      // const { token, user } = response.data;
-    
-                      // Store token in localStorage
-                      // localStorage.setItem("token", token);
-                      // dispatch()
                       dispatch(setToken(response.data.accessToken))
+                      dispatch(setUser(response.data.user.role))
+                      dispatch(setIsAuthenticated(true))
+
+                      // setAuth({ user, roles, accessToken });
+
+                      localStorage.setItem("role", response.data.user.role);
     
-                      // Dispatch user data to Redux store
-                      // dispatch(setUser(user));
-    
-                      // Navigate to dashboard or home
-                      navigate("/dashboard");
+                      
+                      // navigate("/dashboard");
     
                       // Close login modal
                       dispatch(isLoginAction(false));
